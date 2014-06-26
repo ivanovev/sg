@@ -81,10 +81,12 @@ def list_src(reg_io, r, n1, n2, l, val=None):
             return l[0]
 
 class RegsData(Data):
-    def __init__(self, sz=32, io_cb=util_io_cb):
+    def __init__(self, sz=32, io_cb=util_io_cb, columns=None):
         Data.__init__(self, io_cb=io_cb)
         self.cur = 0
         self.sz = sz
+        if columns:
+            self.columns = columns
 
     def add_bit(self, i, name, grayed=None, msg=None, v0=None):
         k = self.cmds.name
@@ -102,11 +104,11 @@ class RegsData(Data):
 
     def add_bits(self, i, name, grayed=None, msg=None, value=None, finalize=False):
         v0 = value
+        l = len(self.cmds)
         if not len(self.cmds):
             o = self.add_bit(i, name, grayed, msg, v0)
         else:
             k,v = list(self.cmds.items())[-1]
-            l = len(self.cmds)
             for j in range(l, i):
                 v10 = None if v.v0 == None else v.v0 >> (j - l + 1) & 1
                 v1 = self.add_bit(j, v.name, v.grayed, v.msg1, v0=v10)
@@ -177,7 +179,10 @@ class RegsData(Data):
                 gg = j[3].split(':')
                 d[k].grayed = bool(int(gg[0]))
                 if len(gg) > 1:
-                    d[k].value = int(gg[1])
+                    if gg[1][0:2] != '0x':
+                        d[k].value = int(gg[1])
+                    else:
+                        d[k].value = int(gg[1], 16)
             if j[4] != '' if len(j) >= 5 else False:
                 d[k].msg = j[4]
         kk = sorted(list(rr), key=lambda r: int(r[1:], 16))

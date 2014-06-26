@@ -25,35 +25,6 @@ def Fpfd_src_cb(data, val):
     Fpfd = REFin*((1.+D)/(R*(1.+T)))
     return '%.3f' % Fpfd
 
-data = RegsData()
-data.add_page('calc0')
-data.add('label1', label='Fout = Fvco/DIV')
-data.add_page('calc1')
-data.add('Fout', wdgt='entry', src=Fout_src_cb, state='readonly', msg='Fout')
-data.add('Fvco1', wdgt='entry', src=Fvco_src_cb, state='readonly', msg='Fvco')
-data.add('DIV', wdgt='combo', state='readonly', value=['1','2','4','8','16'], src=lambda d,v: d.log_src('R4', 20, 22, v), msg='DIV')
-data.add_page('calc2')
-data.add('label2', label='Fvco = Fpfd x (INT + FRAC/MOD)')
-data.add_page('calc3')
-data.add('Fvco', wdgt='entry', src=Fvco_src_cb, state='readonly', msg='Fvco')
-data.add('Fpfd1', wdgt='entry', src=Fpfd_src_cb, state='readonly', msg='Fpfd')
-data.add('INT', wdgt='spin', value={'min':23, 'max':65535, 'step':1}, src=lambda d,v: d.bits_src('R0', 15, 30, v), msg='INT')
-data.add('FRAC', wdgt='spin', value={'min':0, 'max':4094, 'step':1}, src=lambda d,v: d.bits_src('R0', 3, 14, v), msg='FRAC')
-data.add('MOD', wdgt='spin', value={'min':2, 'max':4095, 'step':1}, src=lambda d,v: d.bits_src('R1', 3, 14, v), msg='MOD')
-data.add_page('calc4')
-data.add('label3', label='Fpfd = REFin x [(1 + D)/(R x (1 + T))]')
-data.add_page('calc5')
-data.add('Fpfd', wdgt='entry', src=Fpfd_src_cb, state='readonly', msg='Fpfd')
-data.add('REFin', wdgt='entry', src=lambda d,v: d.dev_src('refin'), state='readonly', msg='REFin')
-data.add('D', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R2', 25, 25, v), msg='D')
-data.add('R', wdgt='spin', value={'min':1, 'max':1023, 'step':1}, src=lambda d,v: d.bits_src('R2', 14, 23, v), msg='R')
-data.add('T', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R2', 24, 24, v), msg='T')
-data.add_page('calc6')
-muxout_list = ['THREE-STATE OUTPUT','DVdd','DGnd','R DIVIDER OUTPUT','N DIVIDER OUTPUT','ANALOG LOCK DETECT','DIGITAL LOCK DETECT','RESERVED']
-data.add('muxout', wdgt='combo', label='MUXOUT', state='readonly', msg='MUXOUT', value=muxout_list, src=lambda d,v: d.list_src('R2',26,28,muxout_list,v))
-ld_list = ['LOW','DIGITAL LOCK DETECT','LOW2','HIGH']
-data.add('ld', wdgt='combo', label='LD PIN MODE', state='readonly', msg='LD PIN MODE', value=ld_list, src=lambda d,v: d.list_src('R5',22,23,ld_list,v))
-
 hex_data = '''
 R0|00480000|
 R1|00008FA1|
@@ -112,8 +83,6 @@ R5|22|LD PIN MODE||
 R5|24|Reserved|1|
 '''
 
-cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, ncpha='1', cpol='0')
-
 def columns():
     return get_columns([c_ip_addr, c_spi, c_refin])
 
@@ -121,6 +90,36 @@ def get_menu(dev):
     return OD([('Registers', regs_cb)])
 
 def get_regs(dev):
+    cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, ncpha='1', cpol='0')
+    data = RegsData()
+    data.add_page('calc0')
+    data.add('label1', label='Fout = Fvco/DIV')
+    data.add_page('calc1')
+    data.add('Fout', wdgt='entry', src=Fout_src_cb, state='readonly', msg='Fout')
+    data.add('Fvco1', wdgt='entry', src=Fvco_src_cb, state='readonly', msg='Fvco')
+    data.add('DIV', wdgt='combo', state='readonly', value=['1','2','4','8','16'], src=lambda d,v: d.log_src('R4', 20, 22, v), msg='DIV')
+    data.add_page('calc2')
+    data.add('label2', label='Fvco = Fpfd x (INT + FRAC/MOD)')
+    data.add_page('calc3')
+    data.add('Fvco', wdgt='entry', src=Fvco_src_cb, state='readonly', msg='Fvco')
+    data.add('Fpfd1', wdgt='entry', src=Fpfd_src_cb, state='readonly', msg='Fpfd')
+    data.add('INT', wdgt='spin', value={'min':23, 'max':65535, 'step':1}, src=lambda d,v: d.bits_src('R0', 15, 30, v), msg='INT')
+    data.add('FRAC', wdgt='spin', value={'min':0, 'max':4094, 'step':1}, src=lambda d,v: d.bits_src('R0', 3, 14, v), msg='FRAC')
+    data.add('MOD', wdgt='spin', value={'min':2, 'max':4095, 'step':1}, src=lambda d,v: d.bits_src('R1', 3, 14, v), msg='MOD')
+    data.add_page('calc4')
+    data.add('label3', label='Fpfd = REFin x [(1 + D)/(R x (1 + T))]')
+    data.add_page('calc5')
+    data.add('Fpfd', wdgt='entry', src=Fpfd_src_cb, state='readonly', msg='Fpfd')
+    data.add('REFin', wdgt='entry', src=lambda d,v: d.dev_src('refin'), state='readonly', msg='REFin')
+    data.add('D', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R2', 25, 25, v), msg='D')
+    data.add('R', wdgt='spin', value={'min':1, 'max':1023, 'step':1}, src=lambda d,v: d.bits_src('R2', 14, 23, v), msg='R')
+    data.add('T', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R2', 24, 24, v), msg='T')
+    data.add_page('calc6')
+    muxout_list = ['THREE-STATE OUTPUT','DVdd','DGnd','R DIVIDER OUTPUT','N DIVIDER OUTPUT','ANALOG LOCK DETECT','DIGITAL LOCK DETECT','RESERVED']
+    data.add('muxout', wdgt='combo', label='MUXOUT', state='readonly', msg='MUXOUT', value=muxout_list, src=lambda d,v: d.list_src('R2',26,28,muxout_list,v))
+    ld_list = ['LOW','DIGITAL LOCK DETECT','LOW2','HIGH']
+    data.add('ld', wdgt='combo', label='LD PIN MODE', state='readonly', msg='LD PIN MODE', value=ld_list, src=lambda d,v: d.list_src('R5',22,23,ld_list,v))
+
     data.add_hex_data(hex_data, cmd_cb=cmd_cb, fmt_cb=strip0x_fmt_cb)
     data.add_bin_data(bin_data)
     return data
