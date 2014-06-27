@@ -3,13 +3,37 @@ from collections import OrderedDict as OD
 from ..regs import RegsData, manyregs_cb
 from .callbacks import spi_efc_cmd_cb, strip0x_fmt_cb
 from util.columns import *
+import pdb
+
+def Fout_src_cb(data, val):
+    Fvco = float(data.get_value('Fvco1'))
+    DIV = float(data.get_value('RFDIV'))
+    return '%.3f' % (Fvco/DIV)
+
+def Fvco_src_cb(data, val):
+    Fpfd = float(data.get_value('Fpfd1'))
+    INT = float(data.get_value('INT'))
+    FRAC1 = float(data.get_value('FRAC1'))
+    FRAC2 = float(data.get_value('FRAC2'))
+    MOD2 = float(data.get_value('MOD2'))
+    MOD1 = float(data.get_value('MOD1'))
+    Fvco = Fpfd*(INT + (FRAC1 + (FRAC2/MOD2)/MOD1))
+    return '%.3f' % Fvco
+
+def Fpfd_src_cb(data, val):
+    REFin = float(data.get_value('REFin'))
+    D = float(data.get_value('D'))
+    R = float(data.get_value('R'))
+    T = float(data.get_value('T'))
+    Fpfd = REFin*((1.+D)/(R*(1.+T)))
+    return '%.3f' % Fpfd
 
 hex_data = '''
-R00|00000000|
+R00|00003E80|
 R01|00000001|
-R02|00000002|
+R02|00000022|
 R03|00000003|
-R04|00000004|
+R04|000D0004|
 R05|00000005|
 R06|00000006|
 R07|00000007|
@@ -106,9 +130,29 @@ def get_regs(dev):
     cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, ncpha='1', cpol='0')
     data = RegsData(columns=4)
     data.add_page('calc0')
-    data.add('label1', label='RF OUT = [INT + (FRAC1 +(FRAC2/MOD2)/MOD1)] × Fpfd / RF Divider')
+    data.add('label1', label='Fout = Fvco / RF Divider')
     data.add_page('calc1')
+    data.add('Fout', wdgt='entry', src=Fout_src_cb, state='readonly', msg='Fout')
+    data.add('Fvco1', wdgt='entry', src=Fvco_src_cb, state='readonly', msg='Fvco')
+    data.add('RFDIV', wdgt='combo', state='readonly', value=['1','2','4','8','16','32','64'], src=lambda d,v: d.log_src('R06', 21, 23, v), msg='RF DIVIDER')
+    data.add_page('calc2')
+    data.add('label2', label='Fvco = Fpfd × [INT + (FRAC1 +(FRAC2/MOD2)/MOD1)]')
+    data.add_page('calc3')
+    data.add('Fvco', wdgt='entry', src=Fvco_src_cb, state='readonly', msg='Fvco')
+    data.add('Fpfd1', wdgt='entry', src=Fpfd_src_cb, state='readonly', msg='Fpfd')
+    data.add('INT', wdgt='spin', value={'min':23, 'max':65535, 'step':1}, src=lambda d,v: d.bits_src('R00', 4, 19, v), msg='INT')
+    data.add('FRAC1', wdgt='spin', value={'min':1, 'max':16777215, 'step':1}, src=lambda d,v: d.bits_src('R01', 4, 27, v), msg='FRAC1')
+    data.add('FRAC2', wdgt='spin', value={'min':0, 'max':16383, 'step':1}, src=lambda d,v: d.bits_src('R02', 18, 31, v), msg='FRAC2')
+    data.add('MOD2', wdgt='spin', value={'min':2, 'max':16383, 'step':1}, src=lambda d,v: d.bits_src('R02', 4, 17, v), msg='MOD2')
+    data.add('MOD1', wdgt='entry', state='readonly', text='16777216', msg='MOD1')
+    data.add_page('calc4')
     data.add('label2', label='Fpfd = REFin × [(1 + D)/(R × (1 + T))]')
+    data.add_page('calc5')
+    data.add('Fpfd', wdgt='entry', src=Fpfd_src_cb, state='readonly', msg='Fpfd')
+    data.add('REFin', wdgt='entry', src=lambda d,v: d.dev_src('refin'), state='readonly', msg='REFin')
+    data.add('D', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R02', 26, 26, v), msg='D')
+    data.add('R', wdgt='spin', value={'min':1, 'max':1023, 'step':1}, src=lambda d,v: d.bits_src('R04', 15, 24, v), msg='R')
+    data.add('T', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R04', 25, 25, v), msg='T')
     data.add_hex_data(hex_data, cmd_cb=cmd_cb, fmt_cb=strip0x_fmt_cb)
     data.add_bin_data(bin_data)
     return data
