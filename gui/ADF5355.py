@@ -3,30 +3,7 @@ from collections import OrderedDict as OD
 from ..regs import RegsData, manyregs_cb
 from .callbacks import spi_efc_cmd_cb, strip0x_fmt_cb
 from util.columns import *
-import pdb
-
-def Fout_src_cb(data, val):
-    Fvco = float(data.get_value('Fvco1'))
-    DIV = float(data.get_value('RFDIV'))
-    return '%.3f' % (Fvco/DIV)
-
-def Fvco_src_cb(data, val):
-    Fpfd = float(data.get_value('Fpfd1'))
-    INT = float(data.get_value('INT'))
-    FRAC1 = float(data.get_value('FRAC1'))
-    FRAC2 = float(data.get_value('FRAC2'))
-    MOD2 = float(data.get_value('MOD2'))
-    MOD1 = float(data.get_value('MOD1'))
-    Fvco = Fpfd*(INT + (FRAC1 + (FRAC2/MOD2)/MOD1))
-    return '%.3f' % Fvco
-
-def Fpfd_src_cb(data, val):
-    REFin = float(data.get_value('REFin'))
-    D = float(data.get_value('D'))
-    R = float(data.get_value('R'))
-    T = float(data.get_value('T'))
-    Fpfd = REFin*((1.+D)/(R*(1.+T)))
-    return '%.3f' % Fpfd
+from .ADF4355_2 import Fout_src_cb, Fvco_src_cb, Fpfd_src_cb
 
 hex_data = '''
 R00|00003E80|
@@ -83,14 +60,12 @@ R05|18|RESERVED|1|
 R05|19|CSR|
 R05|20|RESERVED|
 R05|23|ABP|
-R05|24|DITHER|
-R05|25|RESERVED|
+R05|24|RESERVED|
 R06|0|Control bits|1:6|
 R06|4|OUTPUT POWER|
 R06|6|RF OUTPUT ENABLE|
-R06|7|AUX OUTPUT POWER|
-R06|9|AUX OUTPUT ENABLE|
-R06|10|RESERVED|1|
+R06|7|RESERVED|1|
+R06|10|RFOUTB|
 R06|11|MTLD|
 R06|12|VCO POWER-DOWN|
 R06|13|CP BLEED CURRENT|
@@ -127,7 +102,6 @@ def get_menu(dev):
     return OD([('Registers', manyregs_cb)])
 
 def get_regs(dev):
-    cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, ncpha='1', cpol='0')
     data = RegsData(columns=4)
     data.add_page('calc0')
     data.add('label1', label='Fout = Fvco / RF Divider')
@@ -153,6 +127,7 @@ def get_regs(dev):
     data.add('D', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R02', 26, 26, v), msg='D')
     data.add('R', wdgt='spin', value={'min':1, 'max':1023, 'step':1}, src=lambda d,v: d.bits_src('R04', 15, 24, v), msg='R')
     data.add('T', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R04', 25, 25, v), msg='T')
+    cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, ncpha='1', cpol='0')
     data.add_hex_data(hex_data, cmd_cb=cmd_cb, fmt_cb=strip0x_fmt_cb)
     data.add_bin_data(bin_data)
     return data
