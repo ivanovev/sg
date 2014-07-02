@@ -11,16 +11,6 @@ def Fout_src_cb(data, val):
     R = float(data.get_value('R'))
     return '%.3f' % (REFin * B / R)
 
-data = RegsData()
-data.add_page('calc0')
-data.add('label1', label='Fvco = REFin * B / R')
-data.add_page('calc1')
-data.add('Fout', wdgt='entry', state='readonly', src=Fout_src_cb, msg='Fout')
-data.add('REFin', wdgt='entry', state='readonly', src=lambda d,v: d.dev_src('refin'), msg='REFin')
-spn = RegsData.spn
-data.add('B', wdgt='spin', value=spn(3, 8191), src=lambda d,v:d.bits_src('R2', 8, 20, v, minimum=3), msg='B')
-data.add('R', wdgt='spin', value=spn(1, 16383), src=lambda d,v:d.bits_src('R1', 2, 15, v, minimum=1), msg='R')
-
 hex_data = '''
 R0|000020|CONTROL LATCH
 R2|000802|N COUNTER LATCH
@@ -59,6 +49,16 @@ def get_menu(dev):
     return OD([('Registers', regs_cb)])
 
 def get_regs(dev):
+    data = RegsData()
+    data.add_page('calc0')
+    data.add('label1', label='Fvco = REFin * B / R')
+    data.add_page('calc1')
+    data.add('Fout', wdgt='entry', state='readonly', src=Fout_src_cb, msg='Fout')
+    data.add('REFin', wdgt='entry', state='readonly', src=lambda d,v: d.dev_src('refin'), msg='REFin')
+    spn = RegsData.spn
+    data.add('B', wdgt='spin', value=spn(3, 8191), src=lambda d,v:d.bits_src('R2', 8, 20, v, minimum=3), msg='B')
+    data.add('R', wdgt='spin', value=spn(1, 16383), src=lambda d,v:d.bits_src('R1', 2, 15, v, minimum=1), msg='R')
+
     data.add_hex_data(hex_data, spi_efc_cmd_cb, strip0x_fmt_cb)
     data.add_bin_data(bin_data)
     return data

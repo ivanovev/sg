@@ -1,8 +1,8 @@
 
 from collections import OrderedDict as OD
 
-from ..regs import RegsData, manyregs_cb
-from .callbacks import strip0x_fmt_cb, spi_efc_cmd_cb
+from ...regs import RegsData, manyregs_cb
+from ..callbacks import strip0x_fmt_cb, spi_efc_cmd_cb
 from . import ADRF6820_hex, ADRF6820_bin
 from util.columns import *
 

@@ -99,27 +99,6 @@ band_list = ['911-951','922-966','935-981','950-996','963-1011','976-1026','991-
 '1729-1810','1748-1825','1774-1840','1779-1853','1794-1869','1822-1885','1830-1897','1848-1915',
 '1870-1931','1883-1942','1902-1961','1923-1977','1938-1992','1956-2008','1975-2026','Auto']
 
-data = RegsData(sz=8)
-data.add_page('calc0')
-data.add('label1', label='Digital Control')
-data.add('dataformat', wdgt='combo', state='readonly', value=['signed','unsigned'], src=Format_src_cb, msg='Data format')
-data.add('interpolation', wdgt='combo', state='readonly', value=['1','2', '4', '8'], src=lambda d,v: d.log_src('R01', 6, 7, v), msg='Interpolation')
-data.add_page('calc1')
-data.add('igain', wdgt='combo', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R0B','R0C'), msg='I DAC Gain')
-data.add('qgain', wdgt='combo', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R0F','R10'), msg='Q DAC Gain')
-data.add_page('calc2')
-data.add('pllband', wdgt='combo', state='readonly', value=band_list, src=PLLBand_src_cb, msg='PLL Band Select')
-data.add('pllvcodivide', wdgt='combo', state='readonly', value=['1','2','4','8'], src=lambda d,v: d.log_src('R09', 5, 6, v), msg='PLL VCO divide ratio')
-data.add('pllloopdivide', wdgt='combo', state='readonly', value=['2','4','8','16'], src=PLLLoopDivide_src_cb, msg='PLL Loop divide ratio')
-data.add_page('calc3')
-data.add('dac1dir', wdgt='combo', state='readonly', value=['source','sink'], src=lambda d,v: DIR_src_cb(d,v,'R0E'), msg='AUX DAC1 Direction')
-data.add('dac1sign', wdgt='combo', state='readonly', value=['+','-'], src=lambda d,v: SIGN_src_cb(d,v,'R0E'), msg='AUX DAC1 Sign')
-data.add('dac1gain', wdgt='combo', state='readonly', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R0D','R0E'), msg='AUX DAC1 Data')
-data.add_page('calc4')
-data.add('dac2dir', wdgt='combo', state='readonly', value=['source','sink'], src=lambda d,v: DIR_src_cb(d,v,'R12'), msg='AUX DAC1 Direction')
-data.add('dac2sign', wdgt='combo', state='readonly', value=['+','-'], src=lambda d,v: SIGN_src_cb(d,v,'R12'), msg='AUX DAC1 Sign')
-data.add('dac2gain', wdgt='combo', state='readonly', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R11','R12'), msg='AUX DAC1 Data')
-
 def cmd_cb(dev, cmd, val=None):
     if val != None:
         r = int(cmd[1:])
@@ -224,6 +203,27 @@ def get_menu(dev, cc=None):
     return OD([('Registers', manyregs_cb)])
 
 def get_regs(dev, cc=None):
+    data = RegsData(sz=8)
+    data.add_page('calc0')
+    data.add('label1', label='Digital Control')
+    data.add('dataformat', wdgt='combo', state='readonly', value=['signed','unsigned'], src=Format_src_cb, msg='Data format')
+    data.add('interpolation', wdgt='combo', state='readonly', value=['1','2', '4', '8'], src=lambda d,v: d.log_src('R01', 6, 7, v), msg='Interpolation')
+    data.add_page('calc1')
+    data.add('igain', wdgt='combo', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R0B','R0C'), msg='I DAC Gain')
+    data.add('qgain', wdgt='combo', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R0F','R10'), msg='Q DAC Gain')
+    data.add_page('calc2')
+    data.add('pllband', wdgt='combo', state='readonly', value=band_list, src=PLLBand_src_cb, msg='PLL Band Select')
+    data.add('pllvcodivide', wdgt='combo', state='readonly', value=['1','2','4','8'], src=lambda d,v: d.log_src('R09', 5, 6, v), msg='PLL VCO divide ratio')
+    data.add('pllloopdivide', wdgt='combo', state='readonly', value=['2','4','8','16'], src=PLLLoopDivide_src_cb, msg='PLL Loop divide ratio')
+    data.add_page('calc3')
+    data.add('dac1dir', wdgt='combo', state='readonly', value=['source','sink'], src=lambda d,v: DIR_src_cb(d,v,'R0E'), msg='AUX DAC1 Direction')
+    data.add('dac1sign', wdgt='combo', state='readonly', value=['+','-'], src=lambda d,v: SIGN_src_cb(d,v,'R0E'), msg='AUX DAC1 Sign')
+    data.add('dac1gain', wdgt='combo', state='readonly', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R0D','R0E'), msg='AUX DAC1 Data')
+    data.add_page('calc4')
+    data.add('dac2dir', wdgt='combo', state='readonly', value=['source','sink'], src=lambda d,v: DIR_src_cb(d,v,'R12'), msg='AUX DAC1 Direction')
+    data.add('dac2sign', wdgt='combo', state='readonly', value=['+','-'], src=lambda d,v: SIGN_src_cb(d,v,'R12'), msg='AUX DAC1 Sign')
+    data.add('dac2gain', wdgt='combo', state='readonly', value=gain_list, src=lambda d,v: Gain_src_cb(d,v,'R11','R12'), msg='AUX DAC1 Data')
+
     data.add_hex_data(hex_data, cmd_cb=cmd_cb)
     data.add_bin_data(bin_data)
     data.columns = 5

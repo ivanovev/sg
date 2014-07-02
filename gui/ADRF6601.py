@@ -12,16 +12,6 @@ def Fvco_src_cb(data, val):
     Fvco = float(REFin)*(INT + float(FRAC)/MOD)
     return '%.3f' % Fvco
 
-data = RegsData(sz=24)
-data.add_page('calc0')
-data.add('label1', label='Fvco = REFin x (INT + FRAC/MOD) / 2')
-data.add_page('calc1')
-data.add('Fvco', wdgt='entry', state='readonly', src=Fvco_src_cb)
-data.add('REFin', wdgt='entry', state='readonly', src=lambda d,v: d.dev_src('refin'))
-data.add('INT', wdgt='spin', value={'min':23, 'max':65535, 'step':1}, src=lambda d,v: d.bits_src('R0', 3, 9, v))
-data.add('FRAC', wdgt='spin', value={'min':0, 'max':4094, 'step':1}, src=lambda d,v: d.bits_src('R2', 3, 13, v))
-data.add('MOD', wdgt='spin', value={'min':2, 'max':4095, 'step':1}, src=lambda d,v: d.bits_src('R1', 3, 13, v))
-
 hex_data = '''
 R0|000020|
 R1|000031|
@@ -89,6 +79,16 @@ def get_menu(dev):
     return OD([('Registers', regs_cb)])
 
 def get_regs(dev):
+    data = RegsData(sz=24)
+    data.add_page('calc0')
+    data.add('label1', label='Fvco = REFin x (INT + FRAC/MOD) / 2')
+    data.add_page('calc1')
+    data.add('Fvco', wdgt='entry', state='readonly', src=Fvco_src_cb)
+    data.add('REFin', wdgt='entry', state='readonly', src=lambda d,v: d.dev_src('refin'))
+    data.add('INT', wdgt='spin', value={'min':23, 'max':65535, 'step':1}, src=lambda d,v: d.bits_src('R0', 3, 9, v))
+    data.add('FRAC', wdgt='spin', value={'min':0, 'max':4094, 'step':1}, src=lambda d,v: d.bits_src('R2', 3, 13, v))
+    data.add('MOD', wdgt='spin', value={'min':2, 'max':4095, 'step':1}, src=lambda d,v: d.bits_src('R1', 3, 13, v))
+
     data.add_hex_data(hex_data, cmd_cb=spi_efc_cmd_cb, fmt_cb=strip0x_fmt_cb)
     data.add_bin_data(bin_data)
     return data
