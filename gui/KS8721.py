@@ -14,9 +14,9 @@ R5||Auto-Negotiation Link Partner Ability
 R6||Auto-Negotiation Expansion
 R7||Auto-Negotiation Next Page
 R8||Link Partner Next Page Ability
-R15||RXER Counter
-R1b||Interrupt Control/Status
-R1f||100BASE-TX PHY Control
+R21||RXER Counter
+R27||Interrupt Control/Status
+R31||100BASE-TX PHY Control
 '''
 
 binregs_str = '''
@@ -87,36 +87,36 @@ R8|13|Message Page|1|1 = Message Page;0 = unformatted page
 R8|12|Acknowledge 2|1|1 = able to act on the information;0 = not able to act on the information
 R8|11|Toggle|1|1 = previous value of transmitted link code word equal to logic zero;0 = previous value of transmitted link code word equal to logic one
 R8|0|Message Field|1|
-R15|0|RXER Counter|0|RX Error counter for the RX_ER in each package
-R1b|15|Jabber en|0|1 = Enable jabber interrupt;0 = Disable jabber interrupt
-R1b|14|Receive Error en|0|1 = Enable receive error interrupt;0 = Disable receive error interrupt
-R1b|13|Page Received en|0|1 = Enable page received interrupt;0 = Disable page received interrupt
-R1b|12|Parallel Detect flt en|0|1 = Enable parallel detect fault interrupt;0 = Disable parallel detect fault interrupt
-R1b|11|Link Partner Ack en|0|1 = Enable link partner acknowledge interrupt;0 = Disable link partner acknowledge interrupt
-R1b|10|Link Down en|0|1 = Enable link down interrupt;0 = Disable link down interrupt
-R1b|9|Remote flt en|0|1 = Enable remote fault interrupt;0 = Disable remote fault interrupt
-R1b|8|Link Up en|0|1 = Enable link up interrupt;0 = Disable link up interrupt
-R1b|7|Jabber irq|1|1 = Jabber irq occurred;0 = Jabber irq has not occurred
-R1b|6|Receive Error irq|1|1 = Receive error occurred;0 = Receive error has not occurred
-R1b|5|Page Receive irq|1|1 = Page receive occurred;0 = Page receive has not occurred
-R1b|4|Parallel Detect flt irq|1|1 = Parallel detect fault occurred;0 = Parallel detect fault has not occurred
-R1b|3|Link Partner Ack irq|1|1 = Link partner acknowledge occurred;0 = Link partner acknowledge has not occurred
-R1b|2|Link Down irq|1|1 = Link down occurred;0 = Link down has not occurred
-R1b|1|Remote flt irq|1|1 = Remote fault occurred;0 = Remote fault has not occurred
-R1b|0|Link Up irq|1|1 = Link up irq occurred;0 = Link up irq has not occurred
-R1f|14|Reserved|1|
-R1f|13|Pairswap Disable|0|1 = Disable MDI/MDI-X;0 = Enable MDI/MDI-X
-R1f|12|Energy Detect|1|1 = Presence of signal on RX+/RX- analog wire pair;0 = No signal detected on RX+/RX-
-R1f|11|Force Link|0|1 = Force link pass;0 = Normal link operation;This bit bypasses the control logic and allow transmitter to;send pattern even if there is no link.
-R1f|10|Power-Saving|0|1 = Enable power-saving;0 = Disable
-R1f|9|Interrupt Level|0|1 = Interrupt pin active high;0 = Active low
-R1f|8|Enable Jabber|0|1 = Enable jabber counter;0 = Disable
-R1f|7|Auto-Neg Complete|0|1 = Auto-negotiation complete;0 = Not complete
-R1f|6|Enable Pause|1|1 = Flow control capable;0 = No flow control
-R1f|5|PHY Isolate|1|1 = PHY in isolate mode;0 = Not isolated
-R1f|2|Operation Mode|1|[000] = Still in Auto-Neg;[001] = 10BASE-T HD;[010] = 100BASE-TX half-duplex;[011] = Reserved;[101] = 10BASE-T FD;[110] = 100BASE-TX full-duplex;[111] = PHY/MII isolate
-R1f|1|Enable SQE Test|0|1 = Enable SQE test;0 = Disable
-R1f|0|Dis Data Scrambling|0|1 = Disable scrambler;0 = Enable
+R21|0|RXER Counter|0|RX Error counter for the RX_ER in each package
+R27|15|Jabber en|0|1 = Enable jabber interrupt;0 = Disable jabber interrupt
+R27|14|Receive Error en|0|1 = Enable receive error interrupt;0 = Disable receive error interrupt
+R27|13|Page Received en|0|1 = Enable page received interrupt;0 = Disable page received interrupt
+R27|12|Parallel Detect flt en|0|1 = Enable parallel detect fault interrupt;0 = Disable parallel detect fault interrupt
+R27|11|Link Partner Ack en|0|1 = Enable link partner acknowledge interrupt;0 = Disable link partner acknowledge interrupt
+R27|10|Link Down en|0|1 = Enable link down interrupt;0 = Disable link down interrupt
+R27|9|Remote flt en|0|1 = Enable remote fault interrupt;0 = Disable remote fault interrupt
+R27|8|Link Up en|0|1 = Enable link up interrupt;0 = Disable link up interrupt
+R27|7|Jabber irq|1|1 = Jabber irq occurred;0 = Jabber irq has not occurred
+R27|6|Receive Error irq|1|1 = Receive error occurred;0 = Receive error has not occurred
+R27|5|Page Receive irq|1|1 = Page receive occurred;0 = Page receive has not occurred
+R27|4|Parallel Detect flt irq|1|1 = Parallel detect fault occurred;0 = Parallel detect fault has not occurred
+R27|3|Link Partner Ack irq|1|1 = Link partner acknowledge occurred;0 = Link partner acknowledge has not occurred
+R27|2|Link Down irq|1|1 = Link down occurred;0 = Link down has not occurred
+R27|1|Remote flt irq|1|1 = Remote fault occurred;0 = Remote fault has not occurred
+R27|0|Link Up irq|1|1 = Link up irq occurred;0 = Link up irq has not occurred
+R31|14|Reserved|1|
+R31|13|Pairswap Disable|0|1 = Disable MDI/MDI-X;0 = Enable MDI/MDI-X
+R31|12|Energy Detect|1|1 = Presence of signal on RX+/RX- analog wire pair;0 = No signal detected on RX+/RX-
+R31|11|Force Link|0|1 = Force link pass;0 = Normal link operation;This bit bypasses the control logic and allow transmitter to;send pattern even if there is no link.
+R31|10|Power-Saving|0|1 = Enable power-saving;0 = Disable
+R31|9|Interrupt Level|0|1 = Interrupt pin active high;0 = Active low
+R31|8|Enable Jabber|0|1 = Enable jabber counter;0 = Disable
+R31|7|Auto-Neg Complete|0|1 = Auto-negotiation complete;0 = Not complete
+R31|6|Enable Pause|1|1 = Flow control capable;0 = No flow control
+R31|5|PHY Isolate|1|1 = PHY in isolate mode;0 = Not isolated
+R31|2|Operation Mode|1|[000] = Still in Auto-Neg;[001] = 10BASE-T HD;[010] = 100BASE-TX half-duplex;[011] = Reserved;[101] = 10BASE-T FD;[110] = 100BASE-TX full-duplex;[111] = PHY/MII isolate
+R31|1|Enable SQE Test|0|1 = Enable SQE test;0 = Disable
+R31|0|Dis Data Scrambling|0|1 = Disable scrambler;0 = Enable
 '''
 
 def columns():
