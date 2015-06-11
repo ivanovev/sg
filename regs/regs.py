@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import asyncio
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -7,8 +8,9 @@ from collections import OrderedDict as OD
 from math import log
 
 from util.control import Control
-from util.mainwnd import Mainwnd
 from util.tooltip import ToolTip
+from util.server import proxy
+from util.myio import MyAIO
 from util.data import Obj
 
 from .regsdata import RegsData, get_bits, set_bits
@@ -24,10 +26,11 @@ class Regs(Control):
         self.root.protocol('WM_DELETE_WINDOW', self.close_window_cb)
         self.update_bin()
         self.update_calc()
+        self.io_start = lambda *args, **kwargs: asyncio.async(self.io.start(*args, **kwargs))
 
     def init_io(self):
-        del self.io[:]
-        self.io.add(self.ctrl_cb1, self.ctrl_cb2, self.regs_cb3, self.cmdio_thread)
+        self.io = MyAIO(self)
+        self.io.add(self.ctrl_cb1, self.ctrl_cb2, self.regs_cb3, proxy.io_cb)
 
     def regs_cb3(self):
         for k,v in self.data.iterkw('R'):
@@ -168,9 +171,11 @@ class Regs(Control):
         v = self.data.find_v(k)
         if v.state == 'readonly':
             return True
-        hv = self.data.get_value(k)
-        if hv in ['', None]:
-            return False
+        if not v.t:
+            return True
+        hv = v.t.get()
+        if not hv:
+            return True
         hv = int(hv, 16)
         for i in range(0, self.data.sz):
             bw = self.data.find_v('%s.%d' % (k, i))

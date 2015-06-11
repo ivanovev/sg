@@ -2,7 +2,7 @@
 from collections import OrderedDict as OD
 from ..regs import RegsData, manyregs_cb
 from .callbacks import mdio_cmd_cb, strip0x_fmt_cb
-from util.columns import get_columns
+from util.columns import *
 
 hex_data = '''
 R0||Basic Control
@@ -120,7 +120,7 @@ R31|0|Dis Data Scrambling|0|1 = Disable scrambler;0 = Enable
 '''
 
 def columns():
-    return get_columns()
+    return get_columns([c_ip_addr])
 
 def get_menu(dev):
     return OD([('Registers', manyregs_cb)])
