@@ -40,6 +40,7 @@ class Regs(Control):
                 self.change_bk_color(k, 'red')
         self.update_bin()
         self.update_calc()
+        self.ctrl_cb3()
 
     def init_layout(self):
         if self.standalone:
@@ -301,4 +302,9 @@ class Regs(Control):
         else:
             self.fb.grid_forget()
         self.frame.pack()
+
+    def read_cb(self, *args):
+        self.data.select('hex')
+        self.io.read = True
+        self.io_start()
 
