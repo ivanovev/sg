@@ -113,7 +113,7 @@ class Regs(Control):
         l, w = self.make_cmdw(fhex, k, self.data.cmds)
         width = 10
         if hasattr(self.data, 'sz'):
-            width = int(self.data.sz/4) + 1
+            width = int(self.data.sz/4) + 3
         l.grid(column=0, row=0, sticky=tk.NSEW, ipadx=5)
         w.configure(width=width)
         w.grid(column=1, row=0)
@@ -217,7 +217,7 @@ class Regs(Control):
     def update_bin(self, k=None):
         if not self.hex_data_valid(k):
             return
-        if k == None:
+        if not k:
             for k,v in self.data.iterkw('R'):
                 if k in self.data.cmds:
                     self.update_bin(k)
@@ -227,7 +227,7 @@ class Regs(Control):
             return
         hv = int(self.data.get_value(k), 16)
         for i in range(0, self.data.sz):
-            self.data.set_value('%s.%d' % (k, i), (hv >> i) & 1)
+            self.data.set_value('%s.%d' % (k, i), '1' if (hv >> i) & 1 else '0')
 
     def update_calc(self):
         if not self.hex_data_valid():

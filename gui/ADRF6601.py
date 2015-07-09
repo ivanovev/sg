@@ -9,7 +9,7 @@ def Fvco_src_cb(data, val):
     INT = float(data.get_value('INT'))
     FRAC = float(data.get_value('FRAC'))
     MOD = float(data.get_value('MOD'))
-    Fvco = float(REFin)*(INT + float(FRAC)/MOD)
+    Fvco = float(REFin)*(INT + float(FRAC)/MOD)/2
     return '%.3f' % Fvco
 
 hex_data = '''
