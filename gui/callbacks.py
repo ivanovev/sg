@@ -24,9 +24,11 @@ def spi_efc_cmd_cb(dev, cmd, val=None, ncpha='1', cpol='1'):
             r = int(cmd[1:])
         return 'efc spi %s %d' % (dev['spi'], r)
 
-def strip0x_fmt_cb(val, read=True):
+def strip0x_fmt_cb(val, read=True, sz=8):
     if val[0:2].lower() == '0x':
         val = val[2:]
+    if sz != 8 and len(val) > sz:
+        val = val[-sz:]
     return val
 
 def mdio_cmd_cb(dev, cmd, val=None):

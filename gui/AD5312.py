@@ -17,13 +17,22 @@ def get_menu(dev):
 def dac_fmt_cb(val, read=True, ref=2.5, dac=0):
     _t = {0.0:0x00, ref:0x3FF}
     if read:
-        return '0'
+        val = int(val, 16)
+        val >>= 2
+        val &= 0x3FF
+        val = find_from_table(_t, val, False)
+        return '%.1f' % val
     else:
         ret = dac << 15
         ret |= 1 <<  14
         v = find_from_table(_t, float(val))
         ret |= int(v) << 2
         return '%.2X' % ret
+
+def dac_cmd_cb(dev, cmd, val, dac='0'):
+    cmd = spi_efc_cmd_cb(dev, cmd, val, ncpha='0', cpol='0')
+    cmd = ' '.join([cmd, dac])
+    return cmd
 
 def get_ctrl(dev):
     data = Data(name='Voltage', send=True, io_cb=util_io_cb)
@@ -34,14 +43,15 @@ def get_ctrl(dev):
     else:
         data.add('ref0', label='Vref1, V', wdgt='entry', state='readonly', send=False, text=ref0)
     ref0 = float(ref0)
-    cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, ncpha='0', cpol='0')
-    data.add('dac1', label='DAC1 Uout, V', wdgt='spin', value=Data.spn(0, ref0, .1), cmd_cb=cmd_cb, fmt_cb=lambda v,r=True: dac_fmt_cb(v,r,ref=ref0,dac=0))
+    cmd_cb = lambda dev, cmd, val: dac_cmd_cb(dev, cmd, val, dac='0')
+    data.add('dac1', label='DAC1 Uout, V', wdgt='spin', value=Data.spn(0, ref0, .1), cmd_cb=cmd_cb, fmt_cb=lambda val,read=True: dac_fmt_cb(val,read,ref=ref0,dac=0))
     if len(ref) == 2:
         ref1 = ref[1]
         data.add('ref1', label='Vref2, V', wdgt='entry', state='readonly', send=False, text=ref1)
         ref1 = float(ref1)
     else:
         ref1 = ref0
-    data.add('dac2', label='DAC2 Uout, V', wdgt='spin', value=Data.spn(0, ref1, .1), cmd_cb=cmd_cb, fmt_cb=lambda v,r=True: dac_fmt_cb(v,r,ref=ref1,dac=1))
+    cmd_cb = lambda dev, cmd, val: dac_cmd_cb(dev, cmd, val, dac='1')
+    data.add('dac2', label='DAC2 Uout, V', wdgt='spin', value=Data.spn(0, ref1, .1), cmd_cb=cmd_cb, fmt_cb=lambda val,read=True: dac_fmt_cb(val,read,ref=ref1,dac=1))
     return data
 

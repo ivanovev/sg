@@ -3,6 +3,8 @@ from collections import OrderedDict as OD
 from .ADF4350 import columns
 from ..regs import RegsData, regs_cb
 from .callbacks import strip0x_fmt_cb, spi_efc_cmd_cb
+from util.columns import *
+from math import ceil
 
 hex_data = '''
 R0|FEF|
@@ -15,6 +17,9 @@ R0|6|VGA2 Switch
 R0|7|VGA1 Maximum Gain
 R0|9|VGA2 Maximum Gain
 '''
+
+def columns():
+    return get_columns([c_ip_addr, c_spi])
 
 def get_menu(dev):
     return OD([('Registers', regs_cb)])
@@ -36,7 +41,8 @@ def get_regs(dev):
     data.add_page('calc5')
     data.add('vga2_gain', wdgt='combo', state='readonly', label='VGA2 Maximum Gain, dB', value=vga2_gain, src=lambda d,v: d.list_src('R0', 9, 10, vga2_gain, v))
 
-    data.add_hex_data(hex_data, cmd_cb=spi_efc_cmd_cb, fmt_cb=strip0x_fmt_cb)
+    fmt_cb = lambda val, read: strip0x_fmt_cb(val, read, ceil(data.sz/4))
+    data.add_hex_data(hex_data, cmd_cb=spi_efc_cmd_cb, fmt_cb=fmt_cb)
     data.add_bin_data(bin_data)
     return data
 

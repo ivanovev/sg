@@ -30,14 +30,29 @@ class Regs(Control):
 
     def init_io(self):
         self.io = MyAIO(self)
-        self.io.add(self.ctrl_cb1, self.ctrl_cb2, self.regs_cb3, proxy.io_cb)
+        self.io.add(self.regs_cb1, self.ctrl_cb2, self.regs_cb3, proxy.io_cb)
+
+    def regs_cb1(self):
+        self.data.select('hex')
+        oo = []
+        for obj in self.data.iter_cmds2(self.io.read):
+            oo.append(obj)
+        #oo = list(reversed(sorted(oo, key=lambda o: o.cmdid)))
+        for obj in reversed(oo):
+            self.io.qo.put(obj)
+        return True
 
     def regs_cb3(self):
-        for k,v in self.data.iterkw('R'):
-            if k not in self.data.cmds:
-                continue
+        ret = True
+        self.data.select('hex')
+        for k,v in self.data.cmds.items():
             if not self.hex_data_valid(k):
                 self.change_bk_color(k, 'red')
+                ret = False
+            else:
+                self.change_bk_color(k, 'white')
+        if not ret:
+            return False
         self.update_bin()
         self.update_calc()
         self.ctrl_cb3()
@@ -176,7 +191,7 @@ class Regs(Control):
             return True
         hv = v.t.get()
         if not hv:
-            return True
+            return False
         hv = int(hv, 16)
         for i in range(0, self.data.sz):
             bw = self.data.find_v('%s.%d' % (k, i))
@@ -218,7 +233,8 @@ class Regs(Control):
         if not self.hex_data_valid(k):
             return
         if not k:
-            for k,v in self.data.iterkw('R'):
+            self.data.select('hex')
+            for k,v in self.data.cmds.items():
                 if k in self.data.cmds:
                     self.update_bin(k)
             return

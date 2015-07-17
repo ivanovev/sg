@@ -141,7 +141,7 @@ class RegsData(Data):
             self.set_value(k, hv)
 
     def parse_hex_data(self, s):
-        d = {}
+        d = OD()
         rr = set()
         a = s.split('\n')
         for i in a:
@@ -150,8 +150,9 @@ class RegsData(Data):
                 continue
             rr.add(j[0])
             d[j[0]] = (j[1], j[2])
-        kk = sorted(list(rr), key=lambda r: int(r[1:], 16))
-        return OD([(i, d[i]) for i in kk])
+        #kk = sorted(list(rr), key=lambda r: int(r[1:], 16))
+        #return OD([(i, d[i]) for i in kk])
+        return d
 
     def add_hex_data(self, s, cmd_cb=None, fmt_cb=None):
         hd = self.parse_hex_data(s)
@@ -185,7 +186,8 @@ class RegsData(Data):
                         d[k].value = int(gg[1], 16)
             if j[4] != '' if len(j) >= 5 else False:
                 d[k].msg = j[4]
-        kk = sorted(list(rr), key=lambda r: int(r[1:], 16))
+        #kk = sorted(list(rr), key=lambda r: int(r[1:], 16))
+        kk = list(self['hex'].keys())
         for r in kk:
             rk = list(filter(lambda x: x.find(r + '.') == 0, d.keys()))
             f = lambda k: int(k.split('.')[-1])
