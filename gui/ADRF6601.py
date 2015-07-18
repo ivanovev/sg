@@ -2,7 +2,7 @@
 from collections import OrderedDict as OD
 from .ADF4350 import columns
 from ..regs import RegsData, regs_cb
-from .callbacks import strip0x_fmt_cb, spi_efc_cmd_cb
+from .callbacks import spi_efc_cmd_cb
 
 def Fvco_src_cb(data, val):
     REFin = float(data.get_value('REFin'))
@@ -89,7 +89,7 @@ def get_regs(dev):
     data.add('FRAC', wdgt='spin', value={'min':0, 'max':4094, 'step':1}, src=lambda d,v: d.bits_src('R2', 3, 13, v))
     data.add('MOD', wdgt='spin', value={'min':2, 'max':4095, 'step':1}, src=lambda d,v: d.bits_src('R1', 3, 13, v))
 
-    data.add_hex_data(hex_data, cmd_cb=spi_efc_cmd_cb, fmt_cb=strip0x_fmt_cb)
+    data.add_hex_data(hex_data, cmd_cb=spi_efc_cmd_cb)
     data.add_bin_data(bin_data)
     return data
 

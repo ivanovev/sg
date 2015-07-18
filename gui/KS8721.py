@@ -1,7 +1,7 @@
 
 from collections import OrderedDict as OD
 from ..regs import RegsData, manyregs_cb
-from .callbacks import mdio_cmd_cb, strip0x_fmt_cb
+from .callbacks import mdio_cmd_cb
 from util.columns import *
 
 hex_data = '''
@@ -127,7 +127,7 @@ def get_menu(dev):
 
 def get_regs(dev):
     data = RegsData(sz=16)
-    data.add_hex_data(hex_data, cmd_cb=mdio_cmd_cb, fmt_cb=strip0x_fmt_cb)
+    data.add_hex_data(hex_data, cmd_cb=mdio_cmd_cb)
     data.add_bin_data(binregs_str)
     data.columns = 4
     return data

@@ -1,7 +1,7 @@
 
 from collections import OrderedDict as OD
 from ..regs import RegsData, manyregs_cb
-from .callbacks import spi_efc_cmd_cb, strip0x_fmt_cb
+from .callbacks import spi_efc_cmd_cb
 from util.columns import *
 import pdb
 
@@ -153,7 +153,7 @@ def get_regs(dev):
     data.add('D', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R02', 26, 26, v), msg='D')
     data.add('R', wdgt='spin', value={'min':1, 'max':1023, 'step':1}, src=lambda d,v: d.bits_src('R04', 15, 24, v), msg='R')
     data.add('T', wdgt='spin', value={'min':0, 'max':1, 'step':1}, src=lambda d,v: d.bits_src('R04', 25, 25, v), msg='T')
-    data.add_hex_data(hex_data, cmd_cb=cmd_cb, fmt_cb=strip0x_fmt_cb)
+    data.add_hex_data(hex_data, cmd_cb=cmd_cb)
     data.add_bin_data(bin_data)
     return data
 

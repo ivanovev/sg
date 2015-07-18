@@ -4,7 +4,7 @@ from copy import deepcopy
 from math import ceil
 from .ADF4350 import columns
 from ..regs import RegsData, regs_cb
-from .callbacks import strip0x_fmt_cb, spi_efc_cmd_cb
+from .callbacks import spi_efc_cmd_cb
 
 def Fout_src_cb(data, val):
     REFin = float(data.get_value('REFin'))
@@ -61,8 +61,7 @@ def get_regs(dev):
     data.add('R', wdgt='spin', value=spn(1, 16383), src=lambda d,v:d.bits_src('R1', 2, 15, v, minimum=1), msg='R')
 
     cmd_cb = lambda dev, cmd, val=None: spi_efc_cmd_cb(dev, cmd, val, ncpha='1', cpol='0')
-    fmt_cb = lambda val, read: strip0x_fmt_cb(val, read, ceil(data.sz/4))
-    data.add_hex_data(hex_data, cmd_cb, fmt_cb)
+    data.add_hex_data(hex_data, cmd_cb)
     data.add_bin_data(bin_data)
     return data
 

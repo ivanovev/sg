@@ -2,7 +2,7 @@
 import tkinter as tk
 from collections import OrderedDict as OD
 
-from math import log
+from math import log, ceil
 from copy import deepcopy
 from itertools import chain
 
@@ -154,12 +154,21 @@ class RegsData(Data):
         #return OD([(i, d[i]) for i in kk])
         return d
 
+    def strip0x_fmt_cb(self, val, read=True, sz=8):
+        if val[0:2].lower() == '0x':
+            val = val[2:]
+        if sz != 8 and len(val) > sz:
+            val = val[-sz:]
+        return val
+
     def add_hex_data(self, s, cmd_cb=None, fmt_cb=None):
         hd = self.parse_hex_data(s)
         self.add_page('hex')
         for k,v in hd.items():
             text = v[0]
             if not text: text = '0' * int(self.sz/4)
+            if not fmt_cb:
+                fmt_cb = lambda val, read: self.strip0x_fmt_cb(val, read, ceil(self.sz/4))
             v1 = self.add(k, label=k, wdgt='entry', text=text, msg=v[1], send=True, cmd_cb=cmd_cb, fmt_cb=fmt_cb)
                 
     def add_bin_data(self, s):

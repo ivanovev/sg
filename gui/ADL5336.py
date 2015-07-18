@@ -2,7 +2,7 @@
 from collections import OrderedDict as OD
 from .ADF4350 import columns
 from ..regs import RegsData, regs_cb
-from .callbacks import strip0x_fmt_cb, spi_efc_cmd_cb
+from .callbacks import spi_efc_cmd_cb
 from util.columns import *
 from math import ceil
 
@@ -41,8 +41,7 @@ def get_regs(dev):
     data.add_page('calc5')
     data.add('vga2_gain', wdgt='combo', state='readonly', label='VGA2 Maximum Gain, dB', value=vga2_gain, src=lambda d,v: d.list_src('R0', 9, 10, vga2_gain, v))
 
-    fmt_cb = lambda val, read: strip0x_fmt_cb(val, read, ceil(data.sz/4))
-    data.add_hex_data(hex_data, cmd_cb=spi_efc_cmd_cb, fmt_cb=fmt_cb)
+    data.add_hex_data(hex_data, cmd_cb=spi_efc_cmd_cb)
     data.add_bin_data(bin_data)
     return data
 

@@ -1,7 +1,7 @@
 
 from collections import OrderedDict as OD
 from ..regs import RegsData, regs_cb
-from .callbacks import spi_efc_cmd_cb, strip0x_fmt_cb
+from .callbacks import spi_efc_cmd_cb
 from util.columns import *
 
 def Fout_src_cb(data, val):
@@ -120,7 +120,7 @@ def get_regs(dev):
     ld_list = ['LOW','DIGITAL LOCK DETECT','LOW2','HIGH']
     data.add('ld', wdgt='combo', label='LD PIN MODE', state='readonly', msg='LD PIN MODE', value=ld_list, src=lambda d,v: d.list_src('R5',22,23,ld_list,v))
 
-    data.add_hex_data(hex_data, cmd_cb=cmd_cb, fmt_cb=strip0x_fmt_cb)
+    data.add_hex_data(hex_data, cmd_cb=cmd_cb)
     data.add_bin_data(bin_data)
     return data
 
