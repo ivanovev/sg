@@ -6,4 +6,5 @@ from . import ADF4355_2, ADF5355
 from . import ADL5243, ADL5336
 from . import ADRF6510, ADRF6516, ADRF6601, ADRF6655, ADRF6820
 from . import KS8721, LAN8710, LAN8720, LMS6002D
+from . import DAT31SP
 

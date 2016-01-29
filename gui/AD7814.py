@@ -1,7 +1,6 @@
 
-from util.mainwnd import monitor_cb
 from collections import OrderedDict as OD
-from util import Data, find_from_table, util_io_cb
+from util import Data, find_from_table, util_io_cb, monitor_cb
 from util.columns import *
 
 def cmd_cb(dev, cmd, val=None):
