@@ -1,8 +1,8 @@
 
 from collections import OrderedDict as OD
 
-from util import Data, control_cb, util_io_cb
 from util.columns import *
+from util import Data, control_cb, util_io_cb
 from .callbacks import spi_efc_cmd_cb
 
 gain_list = OD()

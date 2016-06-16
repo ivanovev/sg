@@ -1,9 +1,9 @@
 
 from collections import OrderedDict as OD
 
+from util.columns import *
 from util import Data, find_from_table, control_cb, util_io_cb
 from .callbacks import spi_efc_cmd_cb
-from util.columns import *
 
 def float_fmt_cb(val, read=True, spn_max=2.5):
     _t = {0.0:0x00, spn_max:0xFFF}

@@ -1,6 +1,6 @@
 
-from . import ADRF6601
 from copy import deepcopy
+from . import ADRF6601
 
 bin_data = '''
 R5|0|Control bits|1:5|

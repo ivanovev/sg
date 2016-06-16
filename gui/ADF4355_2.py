@@ -1,9 +1,8 @@
 
 from collections import OrderedDict as OD
-from ..regs import RegsData, manyregs_cb
-from .callbacks import spi_efc_cmd_cb
 from util.columns import *
-import pdb
+from .callbacks import spi_efc_cmd_cb
+from ..regs import RegsData, manyregs_cb
 
 def Fout_src_cb(data, val):
     Fvco = float(data.get_value('Fvco1'))

@@ -2,8 +2,8 @@
 from collections import OrderedDict as OD
 from copy import deepcopy
 
-from util import Data, control_cb, util_io_cb
 from util.columns import *
+from util import Data, control_cb, util_io_cb
 from .callbacks import gpio_cmd_cb, gpio_list_fmt_cb, spi_efc_cmd_cb, strip0x_fmt_cb
 
 def reverse_bits(val, sz):

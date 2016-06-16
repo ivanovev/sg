@@ -10,12 +10,9 @@ from numpy import arange, linspace
 from . import LMS6002D_hex, LMS6002D_bin
 from ..callbacks import strip0x_fmt_cb
 from ...regs import RegsData, bits_src, get_bits, set_bits, manyregs2_cb
+
 from util.columns import *
-
-from util import find_key, find_from_table, telnet_io_cb
-from util.server import proxy
-
-import pdb
+from util import proxy, find_key, find_from_table, telnet_io_cb
 
 def reg_io_func(r, v=None, dev=None, data=None):
     ret = None

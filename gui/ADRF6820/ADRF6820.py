@@ -1,10 +1,10 @@
 
 from collections import OrderedDict as OD
 
+from util.columns import *
+from . import ADRF6820_hex, ADRF6820_bin
 from ...regs import RegsData, manyregs_cb
 from ..callbacks import spi_efc_cmd_cb
-from . import ADRF6820_hex, ADRF6820_bin
-from util.columns import *
 
 refsel_list = ['x2', 'x1', '/2', '/4', '/8']
 

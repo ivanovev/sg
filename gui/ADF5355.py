@@ -1,9 +1,9 @@
 
 from collections import OrderedDict as OD
-from ..regs import RegsData, manyregs_cb
-from .callbacks import spi_efc_cmd_cb
 from util.columns import *
 from .ADF4355_2 import Fout_src_cb, Fvco_src_cb, Fpfd_src_cb
+from .callbacks import spi_efc_cmd_cb
+from ..regs import RegsData, manyregs_cb
 
 hex_data = '''
 R00|00003E80|

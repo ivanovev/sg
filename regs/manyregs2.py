@@ -2,7 +2,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from collections import OrderedDict as OD
-import pdb
 
 from .manyregs import Manyregs
 

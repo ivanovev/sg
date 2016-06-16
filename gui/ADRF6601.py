@@ -1,8 +1,8 @@
 
 from collections import OrderedDict as OD
 from .ADF4350 import columns
-from ..regs import RegsData, regs_cb
 from .callbacks import spi_efc_cmd_cb
+from ..regs import RegsData, regs_cb
 
 def Fvco_src_cb(data, val):
     REFin = float(data.get_value('REFin'))

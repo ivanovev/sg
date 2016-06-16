@@ -7,15 +7,9 @@ import tkinter.ttk as ttk
 from collections import OrderedDict as OD
 from math import log
 
-from util.control import Control
-from util.tooltip import ToolTip
-from util.server import proxy
-from util.myio import MyAIO
-from util.data import Obj
+from util import Control, ToolTip, MyAIO, Obj, proxy
 
 from .regsdata import RegsData, get_bits, set_bits
-
-import pdb
 
 class Regs(Control):
     def __init__(self, dev, data, parent=None, standalone=True):

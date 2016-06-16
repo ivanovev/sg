@@ -1,9 +1,9 @@
 
 from collections import OrderedDict as OD
-from ..regs import RegsData, manyregs_cb
-from .callbacks import mdio_cmd_cb
-from util.callbacks import util_io_cb
 from util.columns import *
+from util.callbacks import util_io_cb
+from .callbacks import mdio_cmd_cb
+from ..regs import RegsData, manyregs_cb
 
 hex_data = '''
 R00||Basic Control

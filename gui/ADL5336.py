@@ -1,10 +1,10 @@
 
 from collections import OrderedDict as OD
+from math import ceil
+from util.columns import *
+from .callbacks import spi_efc_cmd_cb
 from .ADF4350 import columns
 from ..regs import RegsData, regs_cb
-from .callbacks import spi_efc_cmd_cb
-from util.columns import *
-from math import ceil
 
 hex_data = '''
 R0|FEF|

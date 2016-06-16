@@ -7,8 +7,6 @@ from copy import deepcopy
 from itertools import chain
 
 from util import Data, Obj, util_io_cb
-import sys
-import pdb
 
 def find_reg_bit(reg, reg_len, bit_num):
     name, value, grayed, msg = '', None, False, None

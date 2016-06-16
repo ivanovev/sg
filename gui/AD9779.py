@@ -1,9 +1,9 @@
 
 from collections import OrderedDict as OD
 from math import log
-from ..regs import RegsData, get_bits, set_bits, manyregs_cb
-from .callbacks import spi_efc_cmd_cb
 from util.columns import *
+from .callbacks import spi_efc_cmd_cb
+from ..regs import RegsData, get_bits, set_bits, manyregs_cb
 
 def Format_src_cb(data, val):
     s = data.get_value('R02')

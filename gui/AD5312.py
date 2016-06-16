@@ -1,9 +1,9 @@
 
 from collections import OrderedDict as OD
 
+from util.columns import *
 from util import Data, find_from_table, control_cb, util_io_cb
 from .callbacks import spi_efc_cmd_cb
-from util.columns import *
 
 def columns():
     return get_columns([c_ip_addr, c_spi, c_refin])

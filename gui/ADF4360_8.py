@@ -2,9 +2,9 @@
 from collections import OrderedDict as OD
 from copy import deepcopy
 from math import ceil
+from .callbacks import spi_efc_cmd_cb
 from .ADF4350 import columns
 from ..regs import RegsData, regs_cb
-from .callbacks import spi_efc_cmd_cb
 
 def Fout_src_cb(data, val):
     REFin = float(data.get_value('REFin'))

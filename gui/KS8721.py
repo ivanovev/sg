@@ -1,8 +1,8 @@
 
 from collections import OrderedDict as OD
-from ..regs import RegsData, manyregs_cb
-from .callbacks import mdio_cmd_cb
 from util.columns import *
+from .callbacks import mdio_cmd_cb
+from ..regs import RegsData, manyregs_cb
 
 hex_data = '''
 R0||Basic Control

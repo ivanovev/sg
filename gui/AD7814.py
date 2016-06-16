@@ -1,7 +1,7 @@
 
 from collections import OrderedDict as OD
-from util import Data, find_from_table, util_io_cb, monitor_cb
 from util.columns import *
+from util import Data, find_from_table, util_io_cb, monitor_cb
 
 def cmd_cb(dev, cmd, val=None):
     return 'spi %s 0000' % dev['spi']

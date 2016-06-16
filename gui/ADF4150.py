@@ -1,7 +1,6 @@
 
-from . import ADF4350
-from . import ADF4351
 from copy import deepcopy
+from . import ADF4350, ADF4351
 
 bin_data = '''
 R0|0|Control bits|1|
