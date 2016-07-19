@@ -187,10 +187,10 @@ class RegsData(Data):
                 gg = j[3].split(':')
                 d[k].grayed = bool(int(gg[0]))
                 if len(gg) > 1:
-                    if gg[1][0:2] != '0x':
-                        d[k].value = int(gg[1])
-                    else:
-                        d[k].value = int(gg[1], 16)
+                    base = 10
+                    if gg[1][0:2] == '0x':
+                        base = 16
+                    d[k].value = int(gg[1], base)
             if j[4] != '' if len(j) >= 5 else False:
                 d[k].msg = j[4]
         #kk = sorted(list(rr), key=lambda r: int(r[1:], 16))
