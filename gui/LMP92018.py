@@ -1,7 +1,7 @@
 
 from collections import OrderedDict as OD
 from ..regs import RegsData, manyregs_cb
-from util import util_io_cb
+from util import Data, control_cb, monitor_cb, util_io_cb, alarm_trace_cb
 from util.columns import *
 
 def lmp_fmt_cb(val, read=True):
@@ -163,13 +163,96 @@ R23|23|R/W|1|
 '''
 
 def columns():
-    return get_columns([c_ip_addr, c_spi])
+    return get_columns([c_ip_addr, c_spi, c_refin])
+
+def tooltips():
+    return {c_refin:'Reference voltage'}
 
 def get_menu(dev):
-    return OD([('Registers', manyregs_cb)])
+    return OD([('DAC', control_cb), ('ADC', monitor_cb), ('Registers', manyregs_cb)])
+
+def adc_dac_fmt_cb(val, read=True, refin=5, n=0, a=0x50):
+    if read:
+        if val[0:2] == '0x':
+            val = (int(val, 16) >> 2) & 0x3FF
+            val = float(val)*refin/1023
+            val = '%.2f' % val
+        else:
+            val = (0x80 + a + n) << 16
+            val = '0x%.6X' % val
+        return val
+    else:
+        ddata = int(float(val)*1023/refin)
+        if ddata > 1023:
+            ddata = 1023
+        val = (a + n) << 16
+        val += ddata << 2
+        return '0x%.6X' % val
+
+def adc_dac_cmd_cb(dev, cmd, val):
+    cmd1 = 'spi %s %s 1 0' % (dev['spi'], val)
+    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x000000')
+    return 'telnet %s; %s' % (cmd1, cmd2)
+
+def rdy_fmt_cb(val, read=True):
+    if read:
+        if val[0:2] == '0x':
+            val = int(val, 16) & 0x1
+            val = '0x00' if val else '0x01'
+        return val
+
+def rdy_cmd_cb(dev, cmd, val):
+    cmd1 = 'spi %s %s 1 0' % (dev['spi'], '0xA00000')
+    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x000000')
+    return 'telnet %s; %s' % (cmd1, cmd2)
+
+def get_ctrl(dev):
+    data = Data(name='DAC', send=True, io_cb=util_io_cb)
+    refin = dev[c_refin]
+    data.add('ref', label='Vref, V', wdgt='entry', state='readonly', send=False, text=refin)
+    refin = float(refin)
+    data.add('dac0', label='DAC0 Uout, V', wdgt='spin', value=Data.spn(0, refin, .01), cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=0,a=0x50))
+    data.add('dac1', label='DAC1 Uout, V', wdgt='spin', value=Data.spn(0, refin, .01), cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=1,a=0x50))
+    data.add('dac2', label='DAC2 Uout, V', wdgt='spin', value=Data.spn(0, refin, .01), cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=2,a=0x50))
+    data.add('dac3', label='DAC3 Uout, V', wdgt='spin', value=Data.spn(0, refin, .01), cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=3,a=0x50))
+    return data
+
+def get_mntr(dev):
+    data = Data('mntr', send=True, io_cb=util_io_cb)
+    data.add('rdy', wdgt='alarm', msg='Status', cmd_cb=rdy_cmd_cb, fmt_cb=rdy_fmt_cb, trace_cb=alarm_trace_cb)
+    data.add_page('mntr1')
+    refin = float(dev[c_refin])
+    data.add('adc0', wdgt='entry', state='readonly', label='ADC0', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=0,a=0x60))
+    data.add('adc1', wdgt='entry', state='readonly', label='ADC1', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=1,a=0x60))
+    data.add('adc2', wdgt='entry', state='readonly', label='ADC2', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=2,a=0x60))
+    data.add('adc3', wdgt='entry', state='readonly', label='ADC3', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=3,a=0x60))
+    data.add('adc4', wdgt='entry', state='readonly', label='ADC4', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=4,a=0x60))
+    data.add('adc5', wdgt='entry', state='readonly', label='ADC5', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=5,a=0x60))
+    data.add('adc6', wdgt='entry', state='readonly', label='ADC6', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=6,a=0x60))
+    data.add('adc7', wdgt='entry', state='readonly', label='ADC7', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=7,a=0x60))
+    data.cmds.columns=4
+    return data
+
+refin_list=[
+        'AREF external, DREF internal',
+        'AREF and DREF internal, REF pin disconnected',
+        'AREF and DREF external',
+        'AREF internal, DREF external',
+        'Deep sleep',
+        'AREF and DREF internal, REF pin connected',
+        'Deep sleep',
+        'Deep sleep'
+        ]
 
 def get_regs(dev):
     data = RegsData(sz=24, io_cb=util_io_cb)
+    data.add_page('calc0')
+    data.add('refin', label='Reference', wdgt='combo', state='readonly', value=refin_list, src=lambda d,v: d.list_src('R2',0,2,refin_list,v))
+    data.add_page('calc1')
+    data.add('dac0', wdgt='check', label='DAC0', src=lambda d,v: d.bits_src('R3',0,0,v))
+    data.add('dac1', wdgt='check', label='DAC1', src=lambda d,v: d.bits_src('R3',1,1,v))
+    data.add('dac2', wdgt='check', label='DAC2', src=lambda d,v: d.bits_src('R3',2,2,v))
+    data.add('dac3', wdgt='check', label='DAC3', src=lambda d,v: d.bits_src('R3',3,3,v))
     data.add_hex_data(hex_data, cmd_cb=lmp_cmd_cb, fmt_cb=lmp_fmt_cb)
     data.add_bin_data(bin_data)
     data.columns = 4
