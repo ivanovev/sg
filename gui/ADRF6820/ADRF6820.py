@@ -6,7 +6,24 @@ from . import ADRF6820_hex, ADRF6820_bin
 from ...regs import RegsData, manyregs_cb
 from ..callbacks import spi_efc_cmd_cb
 
+def adrf_fmt_cb(val, read=True):
+    adrf_fmt_cb.read = read
+    if val[0:2] == '0x':
+        val = int(val, 16) & 0xFFFF
+        val = '%.4X' % val
+    return val
+    
+def adrf_cmd_cb(dev, cmd, val):
+    val = int(val, 16)
+    cmd = int(cmd[1:], 16)
+    if adrf_fmt_cb.read:
+        val = 0x1FFFF
+    val |= cmd << 17
+    val = '0x%.6X' % val
+    return 'spi %s %s 0 0' % (dev['spi'], val)
+
 refsel_list = ['x2', 'x1', '/2', '/4', '/8']
+vcosel_list = ['4.6G-5.7G', '4.02G-4.6G', '3.5G-4.02G', '2.85G-3.5G']
 
 def Fpfd_src_cb(data, val):
     REFSEL = data.get_value('REFSEL')
@@ -41,6 +58,8 @@ def get_calc_data():
     data.add('Fpfd', wdgt='entry', state='readonly', msg='Fpfd', src=Fpfd_src_cb)
     data.add('REFin', wdgt='entry', state='readonly', msg='REFin', src=lambda d,v: d.dev_src('refin'))
     data.add('REFSEL', wdgt='combo', state='readonly', value=refsel_list, msg='REFSEL', src=lambda d,v: d.list_src('R21', 0, 2, refsel_list, v))
+    data.add_page('calc4')
+    data.add('VCOSEL', wdgt='combo', state='readonly', value=vcosel_list, label='VCOSEL', src=lambda d,v: d.list_src('R22', 0, 2, vcosel_list, v))
     return data
 
 def columns():
@@ -52,6 +71,7 @@ def get_menu(dev):
 def get_regs(dev):
     data = get_calc_data()
     data.columns = 5
-    data.add_hex_data(ADRF6820_hex.data, cmd_cb=spi_efc_cmd_cb)
+    data.add_hex_data(ADRF6820_hex.data, cmd_cb=adrf_cmd_cb, fmt_cb=adrf_fmt_cb)
     data.add_bin_data(ADRF6820_bin.data)
     return data
+

@@ -20,7 +20,7 @@ def get_menu(dev):
   
 def get_ctrl(dev):             
     data = Data(name='atten', send=True, io_cb=util_io_cb)
-    cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, ncpha='1', cpol='0')
+    cmd_cb = lambda dev, cmd, val: spi_efc_cmd_cb(dev, cmd, val, cpha='0', cpol='0')
     data.add('atten', label='Attenuation, dB', wdgt='spin', text='0', value=Data.spn(-13.5, 18, 0.5), fmt_cb=fmt_cb, cmd_cb=cmd_cb)
     return data
 

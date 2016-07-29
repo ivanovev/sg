@@ -15,9 +15,12 @@ def gpio_cmd_cb(dev, cmd, val=None, index=0):
     else:
         return 'gpio %s odsr' % gpio
     
-def spi_efc_cmd_cb(dev, cmd, val=None, ncpha='1', cpol='1'):
+def spi_efc_cmd_cb(dev, cmd, val=None, ncpha='1', cpha=None, cpol='1'):
     if val != None:
-        return 'spi %s 0x%s %s %s' % (dev['spi'], val, ncpha, cpol)
+        if cpha:
+            return 'spi %s 0x%s %s %s' % (dev['spi'], val, cpha, cpol)
+        else:
+            return 'spi %s 0x%s %s %s' % (dev['spi'], val, ncpha, cpol)
     else:
         r = 0
         if cmd[0] == 'R':

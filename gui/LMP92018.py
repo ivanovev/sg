@@ -6,10 +6,10 @@ from util.columns import *
 
 def lmp_fmt_cb(val, read=True):
     lmp_fmt_cb.read = read
-    if val[0:2] == '0x':
-        val = int(val, 16)
+    if val[0:2] == '0x': 
+        val = int(val, 16) 
         val &= ~0x800000
-        val = '%.6X' % val
+        val = '%.6X' % val 
     return val
 
 def lmp_cmd_cb(dev, cmd, val):
