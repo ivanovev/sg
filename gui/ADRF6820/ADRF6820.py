@@ -24,6 +24,7 @@ def adrf_cmd_cb(dev, cmd, val):
 
 refsel_list = ['x2', 'x1', '/2', '/4', '/8']
 vcosel_list = ['4.6G-5.7G', '4.02G-4.6G', '3.5G-4.02G', '2.85G-3.5G']
+muxout_list = ['LD', 'VPTAT', 'REFCLK', 'REFCLK/2', 'REFCLK*2', 'REFCLK/8', 'REFCLK/4', 'SCAN']
 
 def Fpfd_src_cb(data, val):
     REFSEL = data.get_value('REFSEL')
@@ -59,6 +60,8 @@ def get_calc_data():
     data.add('REFin', wdgt='entry', state='readonly', msg='REFin', src=lambda d,v: d.dev_src('refin'))
     data.add('REFSEL', wdgt='combo', state='readonly', value=refsel_list, msg='REFSEL', src=lambda d,v: d.list_src('R21', 0, 2, refsel_list, v))
     data.add_page('calc4')
+    data.add('MUXOUT', wdgt='combo', state='readonly', value=muxout_list, label='MUXOUT', width=30, src=lambda d,v: d.list_src('R21', 4, 6, muxout_list, v))
+    data.add_page('calc5')
     data.add('VCOSEL', wdgt='combo', state='readonly', value=vcosel_list, label='VCOSEL', src=lambda d,v: d.list_src('R22', 0, 2, vcosel_list, v))
     return data
 
