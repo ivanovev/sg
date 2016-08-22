@@ -12,18 +12,26 @@ def lmp_fmt_cb(val, read=True):
         val = '%.6X' % val 
     return val
 
+def get_command(cmd):
+    hd = RegsData.parse_hex_data(hex_data)
+    if cmd in hd:
+        return int(hd[cmd][0], 16) & 0xFF0000
+    return 0
+
 def lmp_cmd_cb(dev, cmd, val):
     if lmp_fmt_cb.read:
         val = int(val, 16)
         val |= 0x800000
+        val |= get_command(cmd)
         val = '0x%.6X' % val
     else:
         val = int(val, 16)
         val &= ~0x800000
         val = '0x%.6X' % val
     cmd1 = 'spi %s %s 1 0' % (dev['spi'], val)
-    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x000000')
+    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x00FFFF')
     return 'telnet %s; %s' % (cmd1, cmd2)
+lmp_cmd_cb.cache = dict()
 
 hex_data = '''
 R0|000000|NOOP

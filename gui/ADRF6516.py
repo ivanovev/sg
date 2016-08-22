@@ -21,11 +21,14 @@ def gain_fmt_cb(val, read=True, n=0):
 gain_fmt_cb.gain = OD()
 
 def lpf_fmt_cb(val, read=True):
+    lpf_fmt_cb.read = read
     if read:
-        val = int(val, 16)
-        val >>= 3
-        val &= 0x1F
-        return '%d' % val
+        if val[0:2] == '0x':
+            val = int(val, 16)
+            val >>= 3
+            val &= 0x1F
+            val = '%d' % val
+        return val
     else:
         val = int(val)
         val &= 0x1F
@@ -34,12 +37,14 @@ def lpf_fmt_cb(val, read=True):
         val |= gain_fmt_cb.gain[2] << 2
         val |= gain_fmt_cb.gain[1] << 1
         val |= gain_fmt_cb.gain[0] << 0
-        return '%.2X' % val
+        return '0x%.2X' % val
 
 def lpf_cmd_cb(dev, cmd, val=None):
-    if val == None:
-        val = 'FF'
-    return spi_efc_cmd_cb(dev, cmd, val)
+    val = int(val, 16)
+    if lpf_fmt_cb.read:
+        val = 0x00
+    val = '0x%.2X' % val
+    return 'spi %s %s 0 0' % (dev['spi'], val)
 
 def columns():
     return get_columns([c_ip_addr, c_spi])

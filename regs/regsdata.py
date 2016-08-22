@@ -138,7 +138,8 @@ class RegsData(Data):
             hv = set_bits(hv, n, n1, n2)
             self.set_value(k, hv)
 
-    def parse_hex_data(self, s):
+    @staticmethod
+    def parse_hex_data(s):
         d = OD()
         rr = set()
         a = s.split('\n')
@@ -160,7 +161,7 @@ class RegsData(Data):
         return val
 
     def add_hex_data(self, s, cmd_cb=None, fmt_cb=None):
-        hd = self.parse_hex_data(s)
+        hd = RegsData.parse_hex_data(s)
         self.add_page('hex')
         for k,v in hd.items():
             text = v[0]
