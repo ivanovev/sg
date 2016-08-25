@@ -49,7 +49,7 @@ R11|410000|Version/stepping
 R12|500000|DAC0
 R13|510000|DAC1
 R14|520000|DAC2
-R15|540000|DAC3
+R15|530000|DAC3
 R16|600000|ADC0
 R17|610000|ADC1
 R18|620000|ADC2
@@ -58,6 +58,7 @@ R20|640000|ADC4
 R21|650000|ADC5
 R22|660000|ADC6
 R23|670000|ADC7
+R24|700000|TEMP
 '''
 
 bin_data = '''
@@ -168,6 +169,10 @@ R23|2|ADATA||
 R23|12|Don't care|1|
 R23|16|Command|1:0x67|
 R23|23|R/W|1|
+R24|0|TDATA||
+R24|12|0000|1|
+R24|16|Command|1:0x70|
+R24|23|R/W|1|
 '''
 
 def columns():
@@ -177,20 +182,20 @@ def tooltips():
     return {c_refin:'Reference voltage'}
 
 def get_menu(dev):
-    return OD([('DAC', control_cb), ('ADC', monitor_cb), ('Registers', manyregs_cb)])
+    return OD([('DAC', control_cb), ('ADC+TEMP', monitor_cb), ('Registers', manyregs_cb)])
 
-def adc_dac_fmt_cb(val, read=True, refin=5, n=0, a=0x50):
+def adc_dac_fmt_cb(val, read=True, refin=5, n=0, a=0x50, prc=2):
     if read:
         if val[0:2] == '0x':
             val = (int(val, 16) >> 2) & 0x3FF
             val = float(val)*refin/1023
-            val = '%.2f' % val
+            val = '%g' % round(val, prc)
         else:
             val = (0x80 + a + n) << 16
             val = '0x%.6X' % val
         return val
     else:
-        ddata = int(float(val)*1023/refin)
+        ddata = round(float(val)*1023/refin)
         if ddata > 1023:
             ddata = 1023
         val = (a + n) << 16
@@ -199,7 +204,7 @@ def adc_dac_fmt_cb(val, read=True, refin=5, n=0, a=0x50):
 
 def adc_dac_cmd_cb(dev, cmd, val):
     cmd1 = 'spi %s %s 1 0' % (dev['spi'], val)
-    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x000000')
+    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x00FFFF')
     return 'telnet %s; %s' % (cmd1, cmd2)
 
 def rdy_fmt_cb(val, read=True):
@@ -211,7 +216,22 @@ def rdy_fmt_cb(val, read=True):
 
 def rdy_cmd_cb(dev, cmd, val):
     cmd1 = 'spi %s %s 1 0' % (dev['spi'], '0xA00000')
-    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x000000')
+    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x00FFFF')
+    return 'telnet %s; %s' % (cmd1, cmd2)
+
+def temp_fmt_cb(val, read=True):
+    if read:
+        if val[0:2] == '0x':
+            val = int(val, 16) & 0xFFF
+            if val & 0x800:
+                return '-1'
+            else:
+                return round(val*0.0625, 1)
+        return val
+
+def temp_cmd_cb(dev, cmd, val):
+    cmd1 = 'spi %s %s 1 0' % (dev['spi'], '0xF00000')
+    cmd2 = 'spi %s %s 1 0' % (dev['spi'], '0x00FFFF')
     return 'telnet %s; %s' % (cmd1, cmd2)
 
 def get_ctrl(dev):
@@ -238,6 +258,7 @@ def get_mntr(dev):
     data.add('adc5', wdgt='entry', state='readonly', label='ADC5', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=5,a=0x60))
     data.add('adc6', wdgt='entry', state='readonly', label='ADC6', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=6,a=0x60))
     data.add('adc7', wdgt='entry', state='readonly', label='ADC7', cmd_cb=adc_dac_cmd_cb, fmt_cb=lambda val,read=True: adc_dac_fmt_cb(val,read,refin=refin,n=7,a=0x60))
+    data.add('temp', wdgt='entry', state='readonly', label='TEMP', msg='Temperature', cmd_cb=temp_cmd_cb, fmt_cb=temp_fmt_cb)
     data.cmds.columns=4
     return data
 
